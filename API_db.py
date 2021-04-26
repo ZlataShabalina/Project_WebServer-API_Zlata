@@ -1,10 +1,3 @@
-# site = 'http://google.ru'
-# c = request.urlopen(site).read()
-# c = c.encode('utf-8')
-# with open('templates/page.html', 'w', encoding="UTF-8") as f:
-#     f.write(str(c))
-# f.close()
-
 from flask import Flask, render_template
 from threading import Thread
 from PyQt5 import QtWidgets
