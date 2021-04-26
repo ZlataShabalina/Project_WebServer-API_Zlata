@@ -1,3 +1,12 @@
+# site = 'http://google.ru'
+# c = request.urlopen(site).read()
+# c = c.encode('utf-8')
+# with open('templates/page.html', 'w', encoding="UTF-8") as f:
+#     f.write(str(c))
+# f.close()
+
+from flask import Flask, render_template
+from threading import Thread
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import *
@@ -297,15 +306,29 @@ class mywindow(QtWidgets.QMainWindow):
 
     def home_n(self):
         self.n = 0
-        self.ui.web.setUrl(QUrl(self.news[self.n][2]))
+        site = self.news[self.n][2]
+        c = request.urlopen(site).read()
+        with open('templates/page_n.html', 'w+', encoding="cp1251") as f:
+            f.write(str(c))
+        f.close()
+
+        self.ui.web.setUrl(QUrl('http://127.0.0.1:5000/'))
         self.ui.prg_name.setText(self.news[self.n][1])
         self.ui.prg_name.setStyleSheet("font: 87 10pt 'Arial Black'; color: rgb(255, 0, 0);")
+
+
+
 
     def back_n(self):
         self.n -= 1
         if self.n < 0:
             self.n = self.len
-        self.ui.web.setUrl(QUrl(self.news[self.n][2]))
+        site = self.news[self.n][2]
+        c = request.urlopen(site).read()
+        with open('templates/page_n.html', 'w+', encoding="cp1251") as f:
+            f.write(str(c))
+        f.close()
+        self.ui.web.setUrl(QUrl('http://127.0.0.1:5000/'))
         self.ui.prg_name.setText(self.news[self.n][1])
         self.ui.prg_name.setStyleSheet("font: 87 10pt 'Arial Black'; color: rgb(255, 0, 0);")
 
@@ -313,7 +336,13 @@ class mywindow(QtWidgets.QMainWindow):
         self.n += 1
         if self.n > self.len:
             self.n = 0
-        self.ui.web.setUrl(QUrl(self.news[self.n][2]))
+
+        site = self.news[self.n][2]
+        c = request.urlopen(site).read()
+        with open('templates/page_n.html', 'w+', encoding="cp1251") as f:
+            f.write(str(c))
+        f.close()
+        self.ui.web.setUrl(QUrl('http://127.0.0.1:5000/'))
         self.ui.prg_name.setText(self.news[self.n][1])
         self.ui.prg_name.setStyleSheet("font: 87 10pt 'Arial Black'; color: rgb(255, 0, 0);")
 
@@ -322,19 +351,37 @@ class mywindow(QtWidgets.QMainWindow):
             self.n -= 1
             if self.n < 0:
                 self.n = self.len
-            self.ui.web.setUrl(QUrl(self.artists[self.n][2]))
+            site = self.artists[self.n][2]
+            c = request.urlopen(site).read()
+            with open('templates/page_n.html', 'w+', encoding="cp1251") as f:
+                f.write(str(c))
+            f.close()
+
+            self.ui.web.setUrl(QUrl('http://127.0.0.1:5000/'))
+
 
     def next_a(self):
         if self.artists != False:
             self.n += 1
             if self.n > self.len:
                 self.n = 0
-            self.ui.web.setUrl(QUrl(self.artists[self.n][2]))
+            site = self.artists[self.n][2]
+            c = request.urlopen(site).read()
+            with open('templates/page_n.html', 'w+', encoding="cp1251") as f:
+                f.write(str(c))
+            f.close()
+            self.ui.web.setUrl(QUrl('http://127.0.0.1:5000/'))
 
     def home_a(self):
         if self.artists != False:
             self.n = 0
-            self.ui.web.setUrl(QUrl(self.artists[self.n][2]))
+            site = self.artists[self.n][2]
+            c = request.urlopen(site).read()
+            with open('templates/page_n.html', 'w+', encoding="cp1251") as f:
+                f.write(str(c))
+            f.close()
+
+            self.ui.web.setUrl(QUrl('http://127.0.0.1:5000/'))
 
     def get_lst(self):  # запрашиваем список разделов видео с сайта europaplustv.com
         req = API.url + 'cliptype/get&'
@@ -390,8 +437,24 @@ class mywindow(QtWidgets.QMainWindow):
         return news
 
 
-app = QtWidgets.QApplication([])
-API = mywindow()
-API.show()
 
-sys.exit(app.exec())
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    API = mywindow()
+    API.show()
+    app_ = Flask(__name__)
+
+
+    @app_.route('/')
+    @app_.route('/index')
+    def index():
+        return render_template('page_n.html')
+
+
+    kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
+
+    flaskThread = Thread(target=app_.run, daemon=True, kwargs=kwargs).start()
+
+
+    app.exec_()
